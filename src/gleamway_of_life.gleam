@@ -50,12 +50,12 @@ pub fn gol(grid: List(List(Int)), generation: Int) {
             }
           })
         })
+      expensive_calculation()
       clear_screen()
       io.print("generation: ")
       generation |> int.to_string |> io.println
       print_grid(x)
       io.println("")
-      expensive_calculation()
       gol(x, generation + 1)
     }
   }
@@ -126,5 +126,7 @@ pub fn main() {
       })
     })
 
+  io.println("Initial Grid")
+  print_grid(grid)
   gol(grid, 1)
 }
