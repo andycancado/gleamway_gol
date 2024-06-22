@@ -97,7 +97,7 @@ fn print_grid(grid: List(List(Int))) {
       case cell {
         0 -> ". "
         // n -> int.to_string(n)
-        _ -> "0 "
+        _ -> "▇ "
       }
     })
     // |> list.map(fn(x) { int.to_string(x) })
