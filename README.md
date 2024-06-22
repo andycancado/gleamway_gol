@@ -7,14 +7,7 @@
 gleam add gleamway_of_life
 ```
 ```gleam
-import gleamway_of_life
 
-pub fn main() {
-  // TODO: An example of the project in use
-}
-```
-
-Further documentation can be found at <https://hexdocs.pm/gleamway_of_life>.
 
 ## Development
 
