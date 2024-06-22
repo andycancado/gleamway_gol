@@ -6,14 +6,18 @@ import gleam/list
 import gleam/result
 import gleam/string
 
-const num_generations: Int = 5
+const num_generations: Int = 50
 
 pub fn gol(grid: List(List(Int)), generation: Int) {
   case generation {
     n if n > num_generations -> Nil
     _ -> {
       let n = list.length(grid)
-      let m = list.length(list.first(grid) |> result.unwrap([]))
+      let m =
+        grid
+        |> list.first
+        |> result.unwrap([])
+        |> list.length
 
       let x =
         list.index_map(grid, fn(row, i) {
@@ -39,13 +43,11 @@ pub fn gol(grid: List(List(Int)), generation: Int) {
               })
               |> iterator.fold(0, fn(acc, val) { acc + val })
             let live_neighbors = live_neighbors - cell_state
-
-            // io.println(int.to_string(live_neighbors))
             case cell_state, live_neighbors {
               1, ln if ln < 2 -> 0
               1, ln if ln > 3 -> 0
+              1, ln if ln == 3 || ln == 2 -> 1
               0, 3 -> 1
-              // 1, 3 -> 1
               _, _ -> 0
             }
           })
@@ -53,7 +55,11 @@ pub fn gol(grid: List(List(Int)), generation: Int) {
       expensive_calculation()
       clear_screen()
       io.print("generation: ")
-      generation |> int.to_string |> io.println
+
+      generation
+      |> int.to_string
+      |> io.println
+
       print_grid(x)
       io.println("")
       gol(x, generation + 1)
@@ -62,7 +68,7 @@ pub fn gol(grid: List(List(Int)), generation: Int) {
 }
 
 pub fn expensive_calculation() -> Int {
-  let upper_limit = 1_000_000
+  let upper_limit = 500_000
 
   iterator.range(2, upper_limit)
   |> iterator.filter(fn(n) {
@@ -73,22 +79,6 @@ pub fn expensive_calculation() -> Int {
   |> list.length
 }
 
-// chatgpt doing things here 😃 
-// pub fn list_at(lst: List(a), index: Int) -> Result(a, Nil) {
-//   case index < 0 {
-//     True -> Error(Nil)
-//     False -> do_list_at(lst, index)
-//   }
-// }
-//
-// fn do_list_at(lst: List(a), index: Int) -> Result(a, Nil) {
-//   case lst, index {
-//     [], _ -> Error(Nil)
-//     [head, ..], 0 -> Ok(head)
-//     [_, ..tail], i -> do_list_at(tail, i - 1)
-//   }
-// }
-
 fn print_grid(grid: List(List(Int))) {
   grid
   |> list.map(fn(row) {
@@ -96,11 +86,9 @@ fn print_grid(grid: List(List(Int))) {
     |> list.map(fn(cell) {
       case cell {
         0 -> ". "
-        // n -> int.to_string(n)
         _ -> "▇ "
       }
     })
-    // |> list.map(fn(x) { int.to_string(x) })
     |> string.join("")
   })
   |> string.join("\n")
@@ -112,20 +100,24 @@ fn clear_screen() {
 }
 
 pub fn main() {
-  let rows = 10
-  let cols = 10
+  let rows = 20
+  let cols = 20
   let grid =
     list.index_map(list.range(0, rows - 1), fn(_, i) {
       list.index_map(list.range(0, cols - 1), fn(j, _) {
         case i, j {
-          1, 2 -> 1
-          2, 2 -> 1
-          3, 2 -> 1
+          4, 3 -> 1
+          4, 4 -> 1
+          4, 5 -> 1
+          5, 2 -> 1
+          5, 3 -> 1
+          5, 4 -> 1
           _, _ -> 0
         }
       })
     })
 
+  clear_screen()
   io.println("Initial Grid")
   print_grid(grid)
   gol(grid, 1)
