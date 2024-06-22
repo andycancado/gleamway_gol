@@ -1,4 +1,4 @@
-import gleam/float
+import gleam/erlang/process
 import gleam/int
 import gleam/io
 import gleam/iterator
@@ -52,7 +52,7 @@ pub fn gol(grid: List(List(Int)), generation: Int) {
             }
           })
         })
-      expensive_calculation()
+      process.sleep(1000)
       clear_screen()
       io.print("generation: ")
 
@@ -65,18 +65,6 @@ pub fn gol(grid: List(List(Int)), generation: Int) {
       gol(x, generation + 1)
     }
   }
-}
-
-pub fn expensive_calculation() -> Int {
-  let upper_limit = 500_000
-
-  iterator.range(2, upper_limit)
-  |> iterator.filter(fn(n) {
-    iterator.range(2, int.square_root(n) |> result.unwrap(0.0) |> float.round)
-    |> iterator.all(fn(i) { n % i != 0 })
-  })
-  |> iterator.to_list
-  |> list.length
 }
 
 fn print_grid(grid: List(List(Int))) {
