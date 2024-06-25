@@ -21,37 +21,36 @@ pub fn gol(grid: List(List(Int)), generation: Int) {
 
       let x =
         list.index_map(grid, fn(row, i) {
-          list.index_map(row, fn(cell_state, j) {
-            let live_neighbors =
+          use cell_state, j <- list.index_map(row)
+          let live_neighbors =
+            iterator.range(-1, 1)
+            |> iterator.flat_map(fn(x) {
               iterator.range(-1, 1)
-              |> iterator.flat_map(fn(x) {
-                iterator.range(-1, 1)
-                |> iterator.map(fn(y) {
-                  let new_x = i + x
-                  let new_y = j + y
-                  case new_x >= 0 && new_y >= 0 && new_x < n && new_y < m {
-                    True ->
-                      iterator.from_list(grid)
-                      |> iterator.at(new_x)
-                      |> result.then(fn(row) {
-                        iterator.from_list(row) |> iterator.at(new_y)
-                      })
-                      |> result.unwrap(0)
-                    False -> 0
-                  }
-                })
+              |> iterator.map(fn(y) {
+                let new_x = i + x
+                let new_y = j + y
+                case new_x >= 0 && new_y >= 0 && new_x < n && new_y < m {
+                  True ->
+                    iterator.from_list(grid)
+                    |> iterator.at(new_x)
+                    |> result.then(fn(row) {
+                      iterator.from_list(row) |> iterator.at(new_y)
+                    })
+                    |> result.unwrap(0)
+                  False -> 0
+                }
               })
-              |> iterator.fold(0, fn(acc, val) { acc + val })
-            let live_neighbors = live_neighbors - cell_state
-            case cell_state, live_neighbors {
-              1, ln if ln < 2 -> 0
-              1, ln if ln > 3 -> 0
-              1, ln if ln == 3 || ln == 2 -> 1
-              0, 3 -> 1
-              _, _ -> 0
-            }
-          })
+            })
+            |> iterator.fold(0, fn(acc, val) { acc + val })
+          let live_neighbors = live_neighbors - cell_state
+          case cell_state, live_neighbors {
+            1, ln if ln < 2 || ln > 3 -> 0
+            1, ln if ln == 3 || ln == 2 -> 1
+            0, 3 -> 1
+            _, _ -> 0
+          }
         })
+      // })
       process.sleep(1000)
       clear_screen()
       io.print("generation: ")
